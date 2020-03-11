@@ -1,5 +1,16 @@
+require('dotenv').config();
+
 const express = require('express');
 const bodyParser = require('body-parser');
+const fs = require('fs');
+let jsonFile;
+
+const readJsonFile = () => {
+    const file = fs.readFileSync(process.env.DB, 'utf-8');
+    jsonFile = JSON.parse(file);
+}
+
+const updateJsonFile = () => fs.writeFileSync(process.env.DB, JSON.stringify(jsonFile));
 
 const app = express();
 // Importante Los middle-wares de manejo de datos van antes de las rutas
@@ -18,18 +29,24 @@ app.use(bodyParser.json());
 */
 app.use(bodyParser.urlencoded());
 
-app.get('/', (req, res) => res.send('hello world'));
-
-app.get('/filtros', (req, res) => {
-
-    const objKeys = Object.keys(req.query)
-    objKeys.map(keyval => req.query[keyval])
-    console.log(req.query.id, req.query.filter, objKeys)
-    res.send(req.query)
+app.get('/', (req, res) => {
+    readJsonFile();
+    res.send(jsonFile);
 });
 
-app.post('/', (req, res) => res.send(req.body));
+app.get('/:id', (req, res) => {
+    readJsonFile();
+    res.send(jsonFile[req.params.id]);
+});
+
+app.post('/', (req, res) => {
+    readJsonFile();
+    jsonFile.push(req.body);
+    updateJsonFile();
+    res.send(jsonFile);
+});
+
 app.put('/')
 app.delete('/')
 
-app.listen(3000, () => console.log('working'));
+app.listen(process.env.PORT, () => console.log(`running on port ${process.env.PORT}`));
