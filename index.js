@@ -19,7 +19,7 @@ const app = express();
 // Convierte todo el String de datos que viene en el body a Json y lo devuelve a nuestra API
 app.use(bodyParser.json());
 
-// Idem caso aterior pero aca nos maneja todo los datos de nuestra url son convertidos a json
+// Idem caso anterior pero aca nos maneja todo los datos de nuestra url son convertidos a json
 // EJ:   localhost/search?id=foo&filter=bar  nos devolvería
 /*
     {
@@ -31,12 +31,13 @@ app.use(bodyParser.urlencoded());
 
 app.get('/', (req, res) => {
     readJsonFile();
-    res.send(jsonFile);
+    // fIltramos por todos los no borrados
+    res.send(jsonFile.filter(obj => !obj.deleted));
 });
 
 app.get('/:id', (req, res) => {
     readJsonFile();
-    res.send(jsonFile[req.params.id]);
+    res.send(jsonFile.find(obj => obj.id === parseInt(req.params.id)));
 });
 
 app.post('/', (req, res) => {
@@ -46,7 +47,30 @@ app.post('/', (req, res) => {
     res.send(jsonFile);
 });
 
-app.put('/')
-app.delete('/')
+app.put('/:id', (req, res) => {
+    readJsonFile();
+    let modified;
+    jsonFile.map(obj => {
+        if(obj.id === parseInt(req.params.id)) {
+            Object.assign(obj, req.body);
+            modified = obj;
+        }
+    });
+    updateJsonFile();
+    res.send({success: true, modified});
+});
+
+app.delete('/:id', (req, res) => {
+    readJsonFile();
+    let modified;
+    jsonFile.map(obj => {
+        if(obj.id === parseInt(req.params.id)) {
+            Object.assign(obj, {deleted: true});
+            modified = obj;
+        }
+    });
+    updateJsonFile();
+    res.send({success: true, modified});
+});
 
 app.listen(process.env.PORT, () => console.log(`running on port ${process.env.PORT}`));

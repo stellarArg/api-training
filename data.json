@@ -1,1 +1,1 @@
-[{"foo":"algún contenido"},{"bar":123},{"fooBar":"algo mas"}]
+[{"id":1,"value":10,"deleted":false},{"id":2,"value":11,"deleted":false,"foo":"3322","datos":[{"foo":2}]},{"id":3,"value":12,"deleted":false},{"id":4,"value":13,"deleted":false},{"id":5,"value":14,"deleted":false},{"id":6,"value":15,"deleted":false}]
